@@ -1,0 +1,119 @@
+Short Interview Questions
+
+* proxy_pass -> Used to forward client request to the backend
+             -> where to send the client request (Backend server)
+             -> Basic Syntax :
+                location / {
+    proxy_pass http://backend_server;
+}
+             -> Meaning : Client → NGINX → Backend Server
+
+
+* proxy_set_header -> Used to set original client headers to the backend
+                   -> When NGINX forwards request to backend, some original client info is lost
+                   -> proxy_set_header adds those headers back
+                   -> Basuc Syntax
+                    proxy_set_header HEADER_NAME VALUE;
+
+
+
+* sites-available -> stores all site configurations
+                  -> contains all NGINX site configurations
+                  -> Example : 
+                     /etc/nginx/sites-available/
+                     Example Files:
+                        api.example.com
+                        app.example.com
+                        admin.example.com
+                     Important: These are only stored configurations, not active.
+
+                    Example file :
+                    server {
+
+                       listen 80;
+                       server_name example.com;
+
+                       location / {
+                          proxy_pass http://192.168.1.10:8080;
+                       }
+
+                    }
+
+* sites-enabled -> stores active site configuration (symlinks)
+                -> sites-enabled contains active website
+                -> Example
+                   /etc/nginx/sites-enabled/
+                -> Files here are usually symbolic links to sites-available
+                -> Example:
+                   api.example.com -> /etc/nginx/sites-available/api.example.com
+
+
+
+##### Important
+# Why production companies use this structure
+*  Without this structure
+        nginx.conf
+        5000 lines
+    very difficult to manage
+
+* Instead:
+    sites-available/
+        api.conf
+        frontend.conf
+        admin.conf  
+        
+  Active only required sites
+
+# How to enable a site
+Step 1 - Create config
+    /etc/nginx/sites-available/example.com
+Step 2 - Enable site
+    ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+Step 3- Reload NGINX
+    nginx -t
+    systemctl reload nginx
+
+# How to Disable a site
+
+* Remove symlink
+    rm /etc/nginx/sites-enabled/example.com
+
+
+# Visual Explanation
+
+            sites-available
+            ----------------
+
+                api.conf
+                web.conf
+                admin.conf
+
+            sites-enabled
+            ----------------
+
+            api.conf  → active
+            web.conf  → active
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
